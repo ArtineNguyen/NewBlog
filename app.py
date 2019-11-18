@@ -58,9 +58,7 @@ db.create_all()
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
-    # By default (GET REQUEST), python will skip this condition and just return render_template at the end of this function. But If the user submit the form, this line will be checked
     if request.method == 'POST':
-        # we use the email that user provides and check if that email is taken or not
         check_email = User.query.filter_by(email=request.form['email']).first()
         if check_email:  # if email taken
             flash('Email already taken', 'warning')  # we alert the user
@@ -91,7 +89,7 @@ def login():
             return redirect(url_for('register'))
         if user.check_password(request.form['password']):
             login_user(user)
-            flash('Welcome back {current_user.name!}', 'success')
+            flash(f'Welcome back {current_user.name}!', 'success')
             return redirect(url_for('root'))
         flash('wrong password or email', 'warning')
         return redirect(url_for('login'))
