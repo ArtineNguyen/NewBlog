@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 app = Flask(__name__)
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
@@ -152,7 +153,17 @@ def single_post(id):
             return render_template('views/single_post.html', post=post, action=action)
     if not action:
         action = 'view'
-    return render_template('views/single_post.html', post=post, action=action)
+    comments = Comment.query.filter_by(post_id=id).all()
+    return render_template('views/single_post.html', post=post, comments=comments, action="view")
+
+
+@app.route('/posts/<id>/comment', methods=['POST', 'GET'])
+def comment(id):
+    new_comment = Comment(user_id=current_user.id,
+                          post_id=id, body=request.form['body'])
+    db.session.add(new_comment)
+    db.session.commit()
+    return redirect(url_for('single_post', id=id, action='view'))
 
 
 if __name__ == "__main__":
