@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,15 +8,6 @@ db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 
 login_manager = LoginManager(app)
-
-
-@app.route('/')
-def index():
-    return "Hello!"
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 
 class User(UserMixin, db.Model):
@@ -53,4 +44,14 @@ class Comment(db.Model):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
+
 db.create_all()
+
+
+@app.route('/')
+def root():
+    return render_template('views/index.html')
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
