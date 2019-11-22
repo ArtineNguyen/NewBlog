@@ -159,11 +159,13 @@ def single_post(id):
 
 @app.route('/posts/<id>/comment', methods=['POST', 'GET'])
 def comment(id):
-    new_comment = Comment(user_id=current_user.id,
-                          post_id=id, body=request.form['body'])
-    db.session.add(new_comment)
-    db.session.commit()
-    return redirect(url_for('single_post', id=id, action='view'))
+    if request.method == 'POST':
+        new_comment = Comment(user_id=current_user.id,
+                            post_id=id, body=request.form['body'])
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect(url_for('single_post', id=id, action='view'))
+    return render_template('views/index.html')
 
 
 if __name__ == "__main__":
